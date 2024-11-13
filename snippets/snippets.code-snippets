@@ -1,1 +1,247 @@
-{}
+{
+    "launch": {
+        "prefix" : ["launch", "startup"],
+        "body" : [
+            "const std = @import(\"std\");",
+            "",
+            "pub fn main() !void {",
+            "\t$0",
+            "}",
+            ""
+        ],
+        "description" : "Initializes a main function and imports 'std'",
+        "isFileTemplate": true
+    },
+    "fn": {
+        "prefix": "fn",
+        "body": [
+            "fn ${1:name}($2)${3| !, |}${4:void} {",
+            "\t$TM_SELECTED_TEXT$0",
+            "}"
+        ],
+        "description": ""
+    },
+    "generic fn": {
+        "prefix": "fn_generic",
+        "body": [
+            "fn ${1:name}(comptime ${2:T}: ${3:type}, $4)${5| !, |}${6:type} {",
+            "\t$TM_SELECTED_TEXT$0",
+            "}"
+        ],
+        "description": ""
+    },
+    "pub fn": {
+        "prefix": "pub_fn",
+        "body": [
+            "pub fn ${1:name}($2)${3| !, |}${4:type} {",
+            "\t$TM_SELECTED_TEXT$0",
+            "}"
+        ],
+        "description": ""
+    },
+    "inline fn": {
+        "prefix": "inline_fn",
+        "body": [
+            "inline fn ${1:name}($2) {",
+            "\t$TM_SELECTED_TEXT$0",
+            "}"
+        ],
+        "description": ""
+    },
+    "debug": {
+        "prefix": "debug",
+        "body": [
+            "std.debug.print(\"${1:fmt}\", .{ $0 });"
+        ],
+        "description": ""
+    },
+    "comptime": {
+        "prefix": "comptime",
+        "body": [
+            "comptime ${1:name} = $0;"
+        ]
+    },
+    "var": {
+        "prefix": "var",
+        "body": [
+            "var ${1:name}: ${2:type} = $0;"
+        ],
+        "description": ""
+    },
+    "const": {
+        "prefix": "const",
+        "body": [
+            "const ${1:name} = $0;"
+        ],
+        "description": ""
+    },
+    "const type": {
+        "prefix": "const_type",
+        "body": [
+            "const ${1:name}: ${2:type} = $0;"
+        ],
+        "description": ""
+    },
+    "struct": {
+        "prefix": "struct",
+        "body": [
+            "struct {",
+            "\t$TM_SELECTED_TEXT$0",
+            "}"
+        ],
+        "description": ""
+    },
+    "const struct": {
+        "prefix": "const_struct",
+        "body": [
+            "const ${1:name} = struct {",
+            "\t$TM_SELECTED_TEXT$0",
+            "};"
+        ],
+        "description": ""
+    },
+    "try": {
+        "prefix": "try",
+        "body": [
+            "try ${1:${TM_SELECTED_TEXT/(.*);$/$1/}};$0"
+        ],
+        "description": ""
+    },
+    "catch": {
+        "prefix": "catch",
+        "body": [
+            "${TM_SELECTED_TEXT/(.*);$/$1/} catch ${0:unreachable};"
+        ],
+        "description": ""
+    },
+    "list": {
+        "prefix": "list",
+        "body": [
+            ".{$TM_SELECTED_TEXT$0};"
+        ],
+        "description": ""
+    },
+    "array init": {
+        "prefix": "array_init",
+        "body": [
+            "&[_${1::sentinel}]${2:type}{$0};"
+        ],
+        "description": ""
+    },
+    "array list": {
+        "prefix": "array_list",
+        "body": [
+            "var ${1:name} = std.ArrayList(${2:type}).init(${0:allocator});"
+        ],
+        "description": ""
+    },
+    "fixed array list": {
+        "prefix": ["fixed_array_list", "array_list_length"],
+        "body": [
+            "var ${1:name} = std.ArrayList(${2:type}).initCapacity(${3:allocator}, ${0:length});"
+        ],
+        "description": ""
+    },
+    "string hash map": {
+        "prefix": "string_hash_map",
+        "body": [
+            "var ${1:name} = std.StringHashMap(${2:type}).init(${0:allocator});"
+        ],
+        "description": ""
+    },
+    "sort": {
+        "prefix": "sort",
+        "body": [
+            "std.mem.sort(${1:type}, ${2:${TM_CURRENT_WORD}}, {}, std.sort.${3|asc,desc|}($0));"
+        ],
+        "description": ""
+    },
+    "general purpose allocator": {
+        "prefix": ["GPA", "general_purpose_allocator"],
+        "body": [
+            "var ${1:GPA} = std.heap.GeneralPurposeAllocator(.{}){};",
+            "defer $1.deinit();",
+            "const ${2:allocator} = $1.allocator();",
+            "$0"
+        ],
+        "description": ""
+    },
+    "arena allocator": {
+        "prefix": "arena_allocator",
+        "body": [
+            "var ${1:arena} = std.heap.ArenaAllocator.init(${2:std.heap.page_allocator});",
+            "defer $1.deinit();",
+            "const ${3:allocator} = $1.allocator();",
+            "$0"
+        ],
+        "description": ""
+    },
+    "fixed buffer allocator": {
+        "prefix": ["FBA", "fixed_buffer_allocator"],
+        "body": [
+            "var ${1:buffer}: [${2:length}]${3:type} = undefined;",
+            "var ${4:FBA} = std.heap.FixedBufferAllocator.init(&$1);",
+            "const ${5:allocator} = $4.allocator();",
+            "$0"
+        ],
+        "description": ""
+    },    
+    "test": {
+        "prefix": "test",
+        "body": [
+            "test ${1:\"name\"} {",
+            "\t${0:const allocator = std.testing.allocator;}",
+            "}"
+        ]
+    },
+    "expect": {
+        "prefix": "expect",
+        "body": "try std.testing.${1|expect,expectApproxEqAbs,expectApproxEqRel,expectEqual,expectEqualDeep,expectEqualSentinel,expectEqualSlices,expectEqualStrings,expectError,expectFmt,expectStringEndsWith,expectStringStartsWith|}($0);"
+    },
+    
+    // File values
+
+    "file name": {
+        "prefix": "filename",
+        "body": "${TM_FILENAME}",
+    },
+    "file name base": {
+        "prefix": "filenamebase",
+        "body": "${TM_FILENAME_BASE}",
+    },
+    "directory": {
+        "prefix": "directory",
+        "body": "${TM_DIRECTORY}",
+    },
+    "absolute path": {
+        "prefix": "abspath",
+        "body": "${TM_FILEPATH}",
+    },
+    "relative path": {
+        "prefix": "relpath",
+        "body": "${RELATIVE_FILEPATH}",
+    },
+    "workspace name": {
+        "prefix": "workspacename",
+        "body": "${WORKSPACE_NAME}",
+    },
+    "workspace folder": {
+        "prefix": "workspacefolder",
+        "body": "${WORKSPACE_FOLDER}",
+    },
+    
+    // Random values
+
+    "random value": { 
+        "prefix": "randomvalue",
+        "body": "${RANDOM}",
+    },
+    "random hex": {
+        "prefix": "randomhex",
+        "body": "${RANDOM_HEX}",
+    },
+    "uuid": {
+        "prefix": "uuid",
+        "body": "${UUID}",
+    },
+}
