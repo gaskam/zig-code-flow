@@ -1,0 +1,20 @@
+{
+  "name": "zig-code-flow",
+  "displayName": "Zig Code Flow",
+  "description": "LEAVE BLANK",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Snippets"
+  ],
+  "contributes": {
+    "snippets": [
+      {
+        "language": "zig",
+        "path": "./snippets/snippets.code-snippets"
+      }
+    ]
+  }
+}
