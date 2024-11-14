@@ -1,4 +1,19 @@
 {
+    // Basic Snippets
+
+    "zig love": {
+        "prefix": "ziglove",
+        "body": [
+            "const std = @import(\"std\");",
+            "",
+            "pub fn main() !void {",
+            "\tstd.debug.print(\"I love ZIG!\\n\");",
+            "}",
+            ""
+        ],
+        "description": "Prints 'I love ZIG!' to the console",
+        "isFileTemplate": true
+    },
     "launch": {
         "prefix" : ["launch", "startup"],
         "body" : [
@@ -9,9 +24,33 @@
             "}",
             ""
         ],
-        "description" : "Initializes a main function and imports 'std'",
+        "description" : "Initializes a main function",
         "isFileTemplate": true
     },
+    "import": {
+        "prefix": "import",
+        "body": [
+            "const ${1:name} = @import(\"${2:file}\");"
+        ],
+        "description": "Import a module using @import"
+    },
+    "import std": {
+        "prefix": ["import_std", "imps"],
+        "body": [
+            "const std = @import(\"std\");"
+        ],        
+        "description": "Import the standard library"
+    },
+    "import builtin": {
+        "prefix": ["import_builtin", "impb"],
+        "body": [
+            "const builtin = @import(\"builtin\");"
+        ],
+        "description": "Import the builtin module"
+    },
+
+    // Functions
+
     "fn": {
         "prefix": "fn",
         "body": [
@@ -19,7 +58,7 @@
             "\t$TM_SELECTED_TEXT$0",
             "}"
         ],
-        "description": ""
+        "description": "Create a function with optional error union return type"
     },
     "generic fn": {
         "prefix": "fn_generic",
@@ -28,7 +67,7 @@
             "\t$TM_SELECTED_TEXT$0",
             "}"
         ],
-        "description": ""
+        "description": "Create a generic function with compile-time type parameter"
     },
     "pub fn": {
         "prefix": "pub_fn",
@@ -37,51 +76,72 @@
             "\t$TM_SELECTED_TEXT$0",
             "}"
         ],
-        "description": ""
+        "description": "Create a public function with optional error union return type"
     },
     "inline fn": {
         "prefix": "inline_fn",
         "body": [
-            "inline fn ${1:name}($2) {",
+            "inline fn ${1:name}($2)${3| !, |}${4:type} {",
             "\t$TM_SELECTED_TEXT$0",
             "}"
         ],
-        "description": ""
+        "description": "Create an inline function"
     },
+    "nested fn": {
+        "prefix": "nested_fn",
+        "body": [
+            "const ${1:name} = struct {",
+            "\tfn ${2:inner}($3)${4| !, |}${5:void} {",
+            "\t\t$TM_SELECTED_TEXT$0",
+            "\t}",
+            "}.$2;"
+        ],
+        "description": "Create a nested function inside a struct"
+    },
+
+    // Debug
+
     "debug": {
         "prefix": "debug",
         "body": [
             "std.debug.print(\"${1:fmt}\", .{ $0 });"
         ],
-        "description": ""
+        "description": "Print debug output using std.debug.print"
     },
+
+    // Variables
+
     "comptime": {
         "prefix": "comptime",
         "body": [
             "comptime ${1:name} = $0;"
-        ]
+        ],
+        "description": "Define a compile-time variable"
     },
     "var": {
         "prefix": "var",
         "body": [
             "var ${1:name}: ${2:type} = $0;"
         ],
-        "description": ""
+        "description": "Declare a variable with explicit type"
     },
     "const": {
         "prefix": "const",
         "body": [
             "const ${1:name} = $0;"
         ],
-        "description": ""
+        "description": "Declare a constant with inferred type"
     },
     "const type": {
         "prefix": "const_type",
         "body": [
             "const ${1:name}: ${2:type} = $0;"
         ],
-        "description": ""
+        "description": "Declare a constant with explicit type"
     },
+
+    // Data Structures
+    
     "struct": {
         "prefix": "struct",
         "body": [
@@ -89,7 +149,7 @@
             "\t$TM_SELECTED_TEXT$0",
             "}"
         ],
-        "description": ""
+        "description": "Create an anonymous struct"
     },
     "const struct": {
         "prefix": "const_struct",
@@ -98,64 +158,181 @@
             "\t$TM_SELECTED_TEXT$0",
             "};"
         ],
-        "description": ""
+        "description": "Create a named struct type"
     },
-    "try": {
-        "prefix": "try",
+    "enum": {
+        "prefix": "enum",
         "body": [
-            "try ${1:${TM_SELECTED_TEXT/(.*);$/$1/}};$0"
+            "const ${1:name} = enum(${2:type}) {",
+            "\t$TM_SELECTED_TEXT$0",
+            "};"
         ],
-        "description": ""
+        "description": "Create an enumeration with specified integer type"
     },
-    "catch": {
-        "prefix": "catch",
+    "union": {
+        "prefix": "union",
         "body": [
-            "${TM_SELECTED_TEXT/(.*);$/$1/} catch ${0:unreachable};"
+            "const ${1:name} = union(${2:enum}) {",
+            "\t$TM_SELECTED_TEXT$0",
+            "};"
         ],
-        "description": ""
+        "description": "Create a tagged union type"
     },
+
+    // Loops
+
+    "for value": {
+        "prefix": "for_value",
+        "body": [
+            "for ($2) |${1:v}| {",
+            "\t$TM_SELECTED_TEXT$0",
+            "}"
+        ],
+        "description": "Create a for loop iterating over values"
+    },
+    "for value index": {
+        "prefix": "for_value_index",
+        "body": [
+            "for ($3, 0..) |${1:v}, ${2:i}| {",
+            "\t$TM_SELECTED_TEXT$0",
+            "}"
+        ],
+        "description": "Create a for loop with both value and index"
+    },
+    "for inline": {
+        "prefix": "for_inline",
+        "body": [
+            "inline for ($2) |${1:v}| {",
+            "\t$TM_SELECTED_TEXT$0",
+            "}"
+        ],
+        "description": "Create an inline for loop"
+    },
+    "for label": {
+        "prefix": "for_label",
+        "body": [
+            "${1:label}: for ($3) |${2:v}| {",
+            "\t$TM_SELECTED_TEXT$0",
+            "}"
+        ],
+        "description": "Create a labeled for loop"
+    },
+    "for else": {
+        "prefix": "for_else",
+        "body": [
+            "for ($2) |${1:v}| {",
+            "\t$TM_SELECTED_TEXT$0",
+            "\tbreak true;",
+            "} else false;"
+        ],
+        "description": "Create a for loop with else branch"
+    },
+    "while": {
+        "prefix": "while",
+        "body": [
+            "while ($1)${2: : ()} {",
+            "\t$TM_SELECTED_TEXT$0",
+            "}"
+        ],
+        "description": "Create a while loop"
+    },
+    "while else": {
+        "prefix": "while_else",
+        "body": [
+            "while ($1)${2: : ()} {",
+            "\t$TM_SELECTED_TEXT$0",
+            "\tbreak true;",
+            "} else false;"
+        ],
+        "description": "Create a while loop with else branch"
+    },
+    "while option": {
+        "prefix": "while?",
+        "body": [
+            "while ($2) |${1:v}| {",
+            "\t$TM_SELECTED_TEXT$0",
+            "} else |err| {",
+            "\t",
+            "}"
+        ],
+        "description": "Create a while loop for optional values with error handling"
+    },
+    "while label": {
+        "prefix": "while_label",
+        "body": [
+            "${1:label}: while ($2)${3: : ()} {",
+            "\t$TM_SELECTED_TEXT$0",
+            "\twhile ($4)${5: : ()} {",
+            "\t\tbreak :${1:label};",
+            "\t}",
+            "}"
+        ],
+        "description": "Create a labeled while loop with nested break"
+    },
+    "while inline": {
+        "prefix": "while_inline",
+        "body": [
+            "inline while ($1)${2: : ()} {",
+            "\t$TM_SELECTED_TEXT$0",
+            "}"
+        ],
+        "description": "Create an inline while loop"
+    },
+    
+    // Array and Lists
+    
     "list": {
         "prefix": "list",
         "body": [
             ".{$TM_SELECTED_TEXT$0};"
         ],
-        "description": ""
+        "description": "Create an anonymous list literal"
     },
     "array init": {
         "prefix": "array_init",
         "body": [
             "&[_${1::sentinel}]${2:type}{$0};"
         ],
-        "description": ""
+        "description": "Initialize an array with optional sentinel"
     },
     "array list": {
         "prefix": "array_list",
         "body": [
             "var ${1:name} = std.ArrayList(${2:type}).init(${0:allocator});"
         ],
-        "description": ""
+        "description": "Create a dynamic array list"
     },
     "fixed array list": {
         "prefix": ["fixed_array_list", "array_list_length"],
         "body": [
             "var ${1:name} = std.ArrayList(${2:type}).initCapacity(${3:allocator}, ${0:length});"
         ],
-        "description": ""
+        "description": "Create an array list with fixed capacity"
+    },
+    "to owned slice": {
+        "prefix": "to_owned_slice",
+        "body": [
+            "${0:${TM_SELECTED_TEXT:arrayList}}.toOwnedSlice();"
+        ],
+        "description": "Convert ArrayList to owned slice"
     },
     "string hash map": {
         "prefix": "string_hash_map",
         "body": [
             "var ${1:name} = std.StringHashMap(${2:type}).init(${0:allocator});"
         ],
-        "description": ""
+        "description": "Create a hash map with string keys"
     },
     "sort": {
         "prefix": "sort",
         "body": [
-            "std.mem.sort(${1:type}, ${2:${TM_CURRENT_WORD}}, {}, std.sort.${3|asc,desc|}($0));"
+            "std.mem.sort(${1:type}, ${2:${TM_SELECTED_TEXT}}, {}, std.sort.${3|asc,desc|}($0));"
         ],
-        "description": ""
+        "description": "Sort slice using std.sort"
     },
+
+    // Memory Management
+
     "general purpose allocator": {
         "prefix": ["GPA", "general_purpose_allocator"],
         "body": [
@@ -164,7 +341,7 @@
             "const ${2:allocator} = $1.allocator();",
             "$0"
         ],
-        "description": ""
+        "description": "Initialize a General Purpose Allocator (GPA)"
     },
     "arena allocator": {
         "prefix": "arena_allocator",
@@ -174,7 +351,7 @@
             "const ${3:allocator} = $1.allocator();",
             "$0"
         ],
-        "description": ""
+        "description": "Initialize an Arena Allocator"
     },
     "fixed buffer allocator": {
         "prefix": ["FBA", "fixed_buffer_allocator"],
@@ -184,50 +361,177 @@
             "const ${5:allocator} = $4.allocator();",
             "$0"
         ],
-        "description": ""
-    },    
+        "description": "Initialize a Fixed Buffer Allocator (FBA)"
+    },
+
+    // Control Flow
+
+    "if": {
+        "prefix": "if",
+        "body": [
+            "if ($1) {",
+            "\t$TM_SELECTED_TEXT$0",
+            "}"
+        ],
+        "description": "Create an if statement"
+    },
+    "if else": {
+        "prefix": "if_else",
+        "body": [
+            "if ($1) {",
+            "\t$TM_SELECTED_TEXT$0",
+            "} else {",
+            "\t",
+            "}"
+        ],
+        "description": "Create an if-else statement"
+    },
+    "if else option": {
+        "prefix": "if_else?",
+        "body": [
+            "if ($1) |v| {",
+            "\t$TM_SELECTED_TEXT$0",
+            "} else |err| switch(err) {",
+            "\t => ,",
+            "\telse => ,",
+            "}"
+        ],
+        "description": "Create an if-else for optional values with error handling"
+    },
+    "switch": {
+        "prefix": "switch",
+        "body": [
+            "switch ($1) {",
+            "\t$2 => $3,",
+            "\telse => $0,",
+            "}"
+        ],
+        "description": "Create a switch statement"
+    },
+    "orelse": {
+        "prefix": "orelse",
+        "body": [
+            "orelse return $0;"
+        ],
+        "description": "Handle null with orelse return"
+    },
+
+    // Error Handling
+    
+    "try": {
+        "prefix": "try",
+        "body": [
+            "try ${1:${TM_SELECTED_TEXT/(.*);$/$1/}};$0"
+        ],
+        "description": "Try an expression that may return an error"
+    },
+    "catch": {
+        "prefix": "catch",
+        "body": [
+            "${TM_SELECTED_TEXT/(.*);$/$1/} catch ${0:unreachable};"
+        ],
+        "description": "Catch and handle errors from an expression"
+    },
+    "defer": {
+        "prefix": "defer",
+        "body": [
+            "defer {",
+            "\t$TM_SELECTED_TEXT$0",
+            "}"
+        ],
+        "description": "Create a defer block"
+    },
+    "error defer": {
+        "prefix": "errdefer",
+        "body": [
+            "errdefer {",
+            "\t$TM_SELECTED_TEXT$0",
+            "}"
+        ],
+        "description": "Create an errdefer block"
+    },
+    "error": {
+        "prefix": "error",
+        "body": [
+            "error.${0:Error}",
+        ],
+        "description": "Create an error value"
+    },
+    "error set": {
+        "prefix": "error_set",
+        "body": [
+            "error {",
+            "\t${1:Error},$0",
+            "};"
+        ],
+        "description": "Define an error set"
+    },
+
+    // Testing
+
     "test": {
         "prefix": "test",
         "body": [
             "test ${1:\"name\"} {",
             "\t${0:const allocator = std.testing.allocator;}",
             "}"
-        ]
+        ],
+        "description": "Create a test block"
     },
     "expect": {
         "prefix": "expect",
-        "body": "try std.testing.${1|expect,expectApproxEqAbs,expectApproxEqRel,expectEqual,expectEqualDeep,expectEqualSentinel,expectEqualSlices,expectEqualStrings,expectError,expectFmt,expectStringEndsWith,expectStringStartsWith|}($0);"
+        "body": "try std.testing.${1|expect,expectApproxEqAbs,expectApproxEqRel,expectEqual,expectEqualDeep,expectEqualSentinel,expectEqualSlices,expectEqualStrings,expectError,expectFmt,expectStringEndsWith,expectStringStartsWith|}($0);",
+        "description": "Add a test expectation using std.testing"
+    },
+
+    // Assembly
+
+    "asm": {
+        "prefix": "asm",
+        "body": [
+            "asm${1|volatile, |} (",
+            "\t$TM_SELECTED_TEXT$0",
+            ")"
+        ],
+        "description": "Insert inline assembly code"
     },
     
-    // File values
+    // File Information
 
     "file name": {
         "prefix": "filename",
         "body": "${TM_FILENAME}",
+        "description": "Insert current file name with extension"
     },
     "file name base": {
         "prefix": "filenamebase",
         "body": "${TM_FILENAME_BASE}",
+        "description": "Insert current file name without extension"
     },
     "directory": {
         "prefix": "directory",
         "body": "${TM_DIRECTORY}",
+        "description": "Insert current directory path"
     },
     "absolute path": {
         "prefix": "abspath",
         "body": "${TM_FILEPATH}",
+        "description": "Insert absolute path of current file"
     },
     "relative path": {
         "prefix": "relpath",
         "body": "${RELATIVE_FILEPATH}",
+        "description": "Insert workspace-relative path of current file"
     },
     "workspace name": {
         "prefix": "workspacename",
         "body": "${WORKSPACE_NAME}",
+        "description": "Insert current workspace name"
     },
     "workspace folder": {
         "prefix": "workspacefolder",
         "body": "${WORKSPACE_FOLDER}",
+        "description": "Insert current workspace root folder path"
     },
     
     // Random values
@@ -235,13 +539,16 @@
     "random value": { 
         "prefix": "randomvalue",
         "body": "${RANDOM}",
+        "description": "Insert random number"
     },
     "random hex": {
         "prefix": "randomhex",
         "body": "${RANDOM_HEX}",
+        "description": "Insert random hexadecimal value"
     },
     "uuid": {
         "prefix": "uuid",
         "body": "${UUID}",
-    },
+        "description": "Insert a UUID (Universal Unique Identifier)"
+    }
 }
