@@ -86,6 +86,14 @@ jobs:
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Push new version to master
+      - name: Push version changes
+        uses: ad-m/github-push-action@v0.8.0
+        with:
+          force: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: master
           
       # Verify marketplace token
       - name: Verify marketplace token
@@ -101,11 +109,3 @@ jobs:
         with:
           pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
           registryUrl: https://marketplace.visualstudio.com
-
-      # Push new version to master
-      - name: Push version changes
-        uses: ad-m/github-push-action@v0.8.0
-        with:
-          force: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: master
