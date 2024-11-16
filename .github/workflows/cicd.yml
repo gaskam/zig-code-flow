@@ -137,7 +137,9 @@ jobs:
         run: echo "RELEASE_VERSION_DONE=true" >> $GITHUB_OUTPUT
 
   push:
-    needs: [pull-request, release]
+    needs: 
+      - pull-request
+      - release
     if: needs.pull-request.outputs.RELEASE_DONE == 'true' || needs.release.outputs.RELEASE_VERSION_DONE == 'true'
     runs-on: ubuntu-latest
     outputs:
