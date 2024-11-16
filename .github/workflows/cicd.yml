@@ -174,7 +174,10 @@ jobs:
 
       # Push new version to master
       - name: Push version changes
-        run: git push origin master
+        uses: ad-m/github-push-action@v0.8.0
+        with:
+          github_token: ${{ secrets.WORKFLOW_TOKEN }}
+          branch: ${{ github.ref }}
 
       - name: Mark master push as done
         id: mark_push
