@@ -53,18 +53,14 @@ jobs:
       - name: Determine version increment
         id: version_increment
         run: |
-          if [ "${{ github.event_name }}" == "push" ]; then
-            echo "INCREMENT=patch" >> $GITHUB_ENV
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_BODY="${{ github.event.pull_request.body }}"
+          if [[ "$PR_TITLE" =~ \[major\] || "$PR_BODY" =~ \[major\] ]]; then
+            echo "INCREMENT=major" >> $GITHUB_ENV
+          elif [[ "$PR_TITLE" =~ \[minor\] || "$PR_BODY"] =~ \[minor\] ]]; then
+            echo "INCREMENT=minor" >> $GITHUB_ENV
           else
-            PR_TITLE="${{ github.event.pull_request.title }}"
-            PR_BODY="${{ github.event.pull_request.body }}"
-            if [[ "$PR_TITLE" =~ \[major\] || "$PR_BODY" =~ \[major\] ]]; then
-              echo "INCREMENT=major" >> $GITHUB_ENV
-            elif [[ "$PR_TITLE" =~ \[minor\] || "$PR_BODY"] =~ \[minor\] ]]; then
-              echo "INCREMENT=minor" >> $GITHUB_ENV
-            else
-              echo "INCREMENT=patch" >> $GITHUB_ENV
-            fi
+            echo "INCREMENT=patch" >> $GITHUB_ENV
           fi
 
       - name: Bump version
