@@ -2,7 +2,6 @@ name: Publish Extension
 
 on:
   pull_request:
-    types: [closed]
     branches:
       - master
 
@@ -55,13 +54,13 @@ jobs:
         run: |
           PR_TITLE="${{ github.event.pull_request.title }}"
           PR_BODY="${{ github.event.pull_request.body }}"
-          if [[ "$PR_TITLE" =~ \[major\] || "$PR_BODY" =~ \[major\] ]]; then
-            echo "INCREMENT=major" >> $GITHUB_ENV
-          elif [[ "$PR_TITLE" =~ \[minor\] || "$PR_BODY"] =~ \[minor\] ]]; then
-            echo "INCREMENT=minor" >> $GITHUB_ENV
-          else
-            echo "INCREMENT=patch" >> $GITHUB_ENV
+          INCREMENT="patch"
+          if echo "$PR_TITLE" "$PR_BODY" | grep -qi '\[major\]'; then
+            INCREMENT="major"
+          elif echo "$PR_TITLE" "$PR_BODY" | grep -qi '\[minor\]'; then
+            INCREMENT="minor"
           fi
+          echo "INCREMENT=$INCREMENT" >> $GITHUB_ENV
 
       - name: Bump version
         id: bump_version
