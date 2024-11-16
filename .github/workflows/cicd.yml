@@ -55,7 +55,7 @@ jobs:
 
   pull-request:
     needs: [initialize]
-    if: github.event.pull_request.merged == true
+    if: always() && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     outputs:
       RELEASE_DONE: ${{ steps.mark_release.outputs.RELEASE_DONE }}
@@ -117,7 +117,7 @@ jobs:
 
   release:
     needs: [initialize]
-    if: github.event_name == 'release'
+    if: always() && github.event_name == 'release'
     runs-on: ubuntu-latest
     outputs:
       RELEASE_VERSION_DONE: ${{ steps.mark_version.outputs.RELEASE_VERSION_DONE }}
@@ -129,17 +129,18 @@ jobs:
       - name: Get release version
         id: get_version
         run: |
-          VERSION=$(echo "${{ github.event.release.tag_name }}" | sed 's/^v//')
-          echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
+            VERSION=$(echo "${{ github.event.release.tag_name }}" | sed 's/^v//') || {
+            echo "::error::Failed to extract version from tag name"
+            exit 1
+            }
+            echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Mark release version work as done
         id: mark_version
         run: echo "RELEASE_VERSION_DONE=true" >> $GITHUB_OUTPUT
 
   push:
-    needs: 
-      - pull-request
-      - release
+    needs: [pull-request, release]
     if: needs.pull-request.outputs.RELEASE_DONE == 'true' || needs.release.outputs.RELEASE_VERSION_DONE == 'true'
     runs-on: ubuntu-latest
     outputs:
