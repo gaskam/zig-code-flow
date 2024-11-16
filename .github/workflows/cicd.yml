@@ -53,7 +53,7 @@ jobs:
         id: mark_init
         run: echo "INIT_DONE=true" >> $GITHUB_OUTPUT
 
-  release-pull-request:
+  pull-request:
     needs: [initialize]
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
@@ -115,7 +115,7 @@ jobs:
           echo "RELEASE_DONE=true" >> $GITHUB_OUTPUT
           echo "NEW_VERSION=${{ env.NEW_VERSION }}" >> $GITHUB_OUTPUT
 
-  get-release-version:
+  release:
     needs: [initialize]
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
@@ -136,20 +136,23 @@ jobs:
         id: mark_version
         run: echo "RELEASE_VERSION_DONE=true" >> $GITHUB_OUTPUT
 
-  push-to-master:
-    needs: [release-pull-request, get-release-version]
-    if: always() && (needs.release-pull-request.outputs.RELEASE_DONE == 'true' || needs.get-release-version.outputs.RELEASE_VERSION_DONE == 'true')
+  push:
+    needs: [pull-request, release]
+    if: needs.pull-request.outputs.RELEASE_DONE == 'true' || needs.release.outputs.RELEASE_VERSION_DONE == 'true'
     runs-on: ubuntu-latest
     outputs:
       MASTER_PUSH_DONE: ${{ steps.mark_push.outputs.MASTER_PUSH_DONE }}
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
       
       # Ensure version follows semantic versioning (MAJOR.MINOR.PATCH)
       - name: Validate version format
         run: |
-          VERSION="${{ needs.release-pull-request.outputs.NEW_VERSION || needs.get-release-version.outputs.RELEASE_VERSION }}"
+          VERSION="${{ needs.pull-request.outputs.NEW_VERSION || needs.release.outputs.RELEASE_VERSION }}"
           if ! echo "$VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$'; then
             echo "::error::Invalid version format: $VERSION"
             exit 1
@@ -158,12 +161,13 @@ jobs:
       # Update package.json with new version and handle potential errors
       - name: Update version
         run: |
-          VERSION="${{ needs.release-pull-request.outputs.NEW_VERSION || needs.get-release-version.outputs.RELEASE_VERSION }}"
+          VERSION="${{ needs.pull-request.outputs.NEW_VERSION || needs.release.outputs.RELEASE_VERSION }}"
           if ! jq ".version = \"$VERSION\"" package.json > tmp.json; then
             echo "::error::Failed to update package.json"
             exit 1
           fi
           mv tmp.json package.json
+          npm install
 
       # Push new version to master
       - name: Push version changes
@@ -178,8 +182,8 @@ jobs:
         run: echo "MASTER_PUSH_DONE=true" >> $GITHUB_OUTPUT
 
   publish:
-    needs: [push-to-master]
-    if: needs.push-to-master.outputs.MASTER_PUSH_DONE == 'true'
+    needs: [push]
+    if: needs.push.outputs.MASTER_PUSH_DONE == 'true'
     runs-on: ubuntu-latest
 
     steps:
