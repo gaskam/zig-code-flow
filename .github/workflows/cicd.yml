@@ -5,51 +5,71 @@ on:
     types: [closed]
     branches:
       - master
+  release:
+    types: [published]
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  release-and-publish:
-    if: github.event.pull_request.merged == true || github.ref == 'refs/heads/master'
+  initialize:
+    if: github.event.pull_request.merged == true || github.event_name == 'release'
     runs-on: ubuntu-latest
+    outputs:
+      INIT_DONE: ${{ steps.mark_init.outputs.INIT_DONE }}
 
     steps:
-      # Install jq
+      # Install jq for JSON parsing and manipulation
       - name: Install jq
         run: sudo apt-get install -y jq
       
-      # Check repository
+      # Fetch the latest code from the repository
       - name: Checkout repository
         uses: actions/checkout@v4
       
-      # Set up Git
+      # Configure Git identity for automated commits
       - name: Set up Git
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-      # Install Node.js (required for VSCode extensions)
+      # Set up Node.js environment for VSCode extension development
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # Validate package.json file
+      # Ensure package.json is valid and well-formed
       - name: Validate package.json
         run: jq . package.json > /dev/null
 
-      # Install dependencies
+      # Install project dependencies from package.json
       - name: Install dependencies
         run: npm install
+
+      # Mark initialization as done
+      - name: Mark initialization as done
+        id: mark_init
+        run: echo "INIT_DONE=true" >> $GITHUB_OUTPUT
+
+  release-pull-request:
+    needs: [initialize]
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    outputs:
+      RELEASE_DONE: ${{ steps.mark_release.outputs.RELEASE_DONE }}
+      NEW_VERSION: ${{ steps.bump_version.outputs.NEW_VERSION }}
+
+    steps:
+      - uses: actions/checkout@v4
 
       # Get current version
       - name: Get current version
         id: current_version
         run: echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
 
-      # Analyze PR title or body to determine version increment
+      # Extract version from PR title/body: [major], [minor], or patch by default
       - name: Determine version increment
         id: version_increment
         run: |
@@ -63,6 +83,7 @@ jobs:
           fi
           echo "INCREMENT=$INCREMENT" >> $GITHUB_ENV
 
+      # Increment version using npm version command and capture new version
       - name: Bump version
         id: bump_version
         run: |
@@ -87,6 +108,63 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # Mark release work as done
+      - name: Mark release work as done
+        id: mark_release
+        run: |
+          echo "RELEASE_DONE=true" >> $GITHUB_OUTPUT
+          echo "NEW_VERSION=${{ env.NEW_VERSION }}" >> $GITHUB_OUTPUT
+
+  get-release-version:
+    needs: [initialize]
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    outputs:
+      RELEASE_VERSION_DONE: ${{ steps.mark_version.outputs.RELEASE_VERSION_DONE }}
+      RELEASE_VERSION: ${{ steps.get_version.outputs.RELEASE_VERSION }}
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Get release version
+        id: get_version
+        run: |
+          VERSION=$(echo "${{ github.event.release.tag_name }}" | sed 's/^v//')
+          echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Mark release version work as done
+        id: mark_version
+        run: echo "RELEASE_VERSION_DONE=true" >> $GITHUB_OUTPUT
+
+  push-to-master:
+    needs: [release-pull-request, get-release-version]
+    if: always() && (needs.release-pull-request.outputs.RELEASE_DONE == 'true' || needs.get-release-version.outputs.RELEASE_VERSION_DONE == 'true')
+    runs-on: ubuntu-latest
+    outputs:
+      MASTER_PUSH_DONE: ${{ steps.mark_push.outputs.MASTER_PUSH_DONE }}
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      # Ensure version follows semantic versioning (MAJOR.MINOR.PATCH)
+      - name: Validate version format
+        run: |
+          VERSION="${{ needs.release-pull-request.outputs.NEW_VERSION || needs.get-release-version.outputs.RELEASE_VERSION }}"
+          if ! echo "$VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Invalid version format: $VERSION"
+            exit 1
+          fi
+
+      # Update package.json with new version and handle potential errors
+      - name: Update version
+        run: |
+          VERSION="${{ needs.release-pull-request.outputs.NEW_VERSION || needs.get-release-version.outputs.RELEASE_VERSION }}"
+          if ! jq ".version = \"$VERSION\"" package.json > tmp.json; then
+            echo "::error::Failed to update package.json"
+            exit 1
+          fi
+          mv tmp.json package.json
+
       # Push new version to master
       - name: Push version changes
         uses: ad-m/github-push-action@v0.8.0
@@ -94,8 +172,26 @@ jobs:
           force: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: master
-          
-      # Verify marketplace token
+
+      - name: Mark master push as done
+        id: mark_push
+        run: echo "MASTER_PUSH_DONE=true" >> $GITHUB_OUTPUT
+
+  publish:
+    needs: [push-to-master]
+    if: needs.push-to-master.outputs.MASTER_PUSH_DONE == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      
+      - name: Install dependencies
+        run: npm install
+
+      # Ensure VS Marketplace authentication token is available
       - name: Verify marketplace token
         run: |
           if [ -z "${{ secrets.VS_MARKETPLACE_TOKEN }}" ]; then
@@ -103,7 +199,7 @@ jobs:
             exit 1
           fi
 
-      # Publish to Visual Studio Marketplace
+      # Publish extension to VS Code Marketplace using provided token
       - name: Publish to Visual Studio Marketplace
         uses: HaaLeo/publish-vscode-extension@v1.6.2
         with:
