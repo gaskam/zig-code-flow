@@ -31,8 +31,8 @@ jobs:
       # Configure Git identity for automated commits
       - name: Set up Git
         run: |
-          git config user.name "gaspard-lebaube"
-          git config user.email "gaspard.lebaube@gaskam.com"
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
 
       # Set up Node.js environment for VSCode extension development
       - name: Set up Node.js
@@ -174,10 +174,7 @@ jobs:
 
       # Push new version to master
       - name: Push version changes
-        uses: ad-m/github-push-action@v0.8.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+        run: git push origin master
 
       - name: Mark master push as done
         id: mark_push
