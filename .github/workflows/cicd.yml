@@ -173,7 +173,6 @@ jobs:
       - name: Push version changes
         uses: ad-m/github-push-action@v0.8.0
         with:
-          force: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: master
 
