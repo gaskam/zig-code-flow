@@ -145,9 +145,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: master
-          fetch-depth: 0
       
       # Ensure version follows semantic versioning (MAJOR.MINOR.PATCH)
       - name: Validate version format
@@ -169,12 +166,18 @@ jobs:
           mv tmp.json package.json
           npm install
 
+      # Commit version changes to master
+      - name: Commit version changes
+        run: |
+          git add package.json
+          git commit -a -m "Bump version to v$VERSION"
+
       # Push new version to master
       - name: Push version changes
         uses: ad-m/github-push-action@v0.8.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: master
+          branch: ${{ github.ref }}
 
       - name: Mark master push as done
         id: mark_push
