@@ -18,6 +18,9 @@ jobs:
       pull-requests: write
 
     steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
     - uses: actions/stale@v5
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
@@ -26,6 +29,6 @@ jobs:
         stale-pr-message: 'This issue has been classified as inactive. It will be reopened if there is any new interaction. Else it will be closed in 7 days.'
         stale-issue-label: 'inactive'
         stale-pr-label: 'inactive'
-        close-issue-reason: 'inactive'
+        close-issue-reason: 'not_planned'
         exempt-all-milestones: true
         exempt-all-assignees: true
