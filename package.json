@@ -10,15 +10,15 @@
   },
   "license": "MIT",
   "repository": {
-      "type": "git",
-      "url": "https://github.com/gaskam-com/zig-code-flow"
+    "type": "git",
+    "url": "https://github.com/gaskam-com/zig-code-flow"
   },
   "bugs": {
-      "url": "https://github.com/gaskam-com/zig-code-flow/issues"
+    "url": "https://github.com/gaskam-com/zig-code-flow/issues"
   },
   "author": {
-      "name": "Gaskam",
-      "url": "https://github.com/gaskam-com"
+    "name": "Gaskam",
+    "url": "https://github.com/gaskam-com"
   },
   "readme": "README.md",
   "categories": [
@@ -39,7 +39,7 @@
     ]
   },
   "dependencies": {
-    "vsce": "^2.15.0",
+    "vsce": "^1.97.0",
     "xml2js": ">=0.5.0"
   }
 }
