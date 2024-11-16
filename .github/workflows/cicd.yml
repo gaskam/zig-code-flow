@@ -20,35 +20,28 @@ jobs:
       INIT_DONE: ${{ steps.mark_init.outputs.INIT_DONE }}
 
     steps:
-      # Install jq for JSON parsing and manipulation
       - name: Install jq
         run: sudo apt-get install -y jq
       
-      # Fetch the latest code from the repository
       - name: Checkout repository
         uses: actions/checkout@v4
       
-      # Configure Git identity for automated commits
       - name: Set up Git
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
-      # Set up Node.js environment for VSCode extension development
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # Ensure package.json is valid and well-formed
       - name: Validate package.json
         run: jq . package.json > /dev/null
 
-      # Install project dependencies from package.json
       - name: Install dependencies
         run: npm install
 
-      # Mark initialization as done
       - name: Mark initialization as done
         id: mark_init
         run: echo "INIT_DONE=true" >> $GITHUB_OUTPUT
@@ -64,28 +57,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
       - name: Set version based on event
         id: set_version
         run: |
           if [ "${{ github.event_name }}" = "release" ]; then
             VERSION=$(echo "${{ github.event.release.tag_name }}" | sed 's/^v//')
           else
-            # Get current version
             CURRENT_VERSION=$(jq -r .version package.json)
-            
-            # Determine increment type from PR
             INCREMENT="patch"
             if echo "${{ github.event.pull_request.title }} ${{ github.event.pull_request.body }}" | grep -qi '\[major\]'; then
               INCREMENT="major"
             elif echo "${{ github.event.pull_request.title }} ${{ github.event.pull_request.body }}" | grep -qi '\[minor\]'; then
               INCREMENT="minor"
             fi
-            
-            # Bump version and get new version
             npm version $INCREMENT
             VERSION=$(jq -r .version package.json)
-            
-            # Create GitHub Release for PR merge
             gh release create "v$VERSION" \
               --title "Release $VERSION" \
               --generate-notes \
@@ -108,8 +99,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
       
-      # Ensure version follows semantic versioning (MAJOR.MINOR.PATCH)
       - name: Validate version format
         run: |
           VERSION="${{ needs.version-management.outputs.VERSION }}"
@@ -118,7 +113,6 @@ jobs:
             exit 1
           fi
 
-      # Update package.json with new version and handle potential errors
       - name: Update version
         run: |
           VERSION="${{ needs.version-management.outputs.VERSION }}"
@@ -129,13 +123,11 @@ jobs:
           mv tmp.json package.json
           npm install
 
-      # Commit version changes to master
       - name: Commit version changes
         run: |
           git add package.json
           git commit -a -m "Bump version to v$VERSION"
 
-      # Push new version to master
       - name: Push version changes
         uses: ad-m/github-push-action@v0.8.0
         with:
@@ -161,7 +153,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Ensure VS Marketplace authentication token is available
       - name: Verify marketplace token
         run: |
           if [ -z "${{ secrets.VS_MARKETPLACE_TOKEN }}" ]; then
@@ -169,7 +160,6 @@ jobs:
             exit 1
           fi
 
-      # Publish extension to VS Code Marketplace using provided token
       - name: Publish to Visual Studio Marketplace
         uses: HaaLeo/publish-vscode-extension@v1.6.2
         with:
