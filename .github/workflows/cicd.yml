@@ -146,6 +146,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: master
+          token: ${{ secrets.WORKFLOW_TOKEN }}
+      
+      - name: Get latest changes
+        run: |
+          git fetch origin master
+          git checkout master
+          git pull origin master
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
