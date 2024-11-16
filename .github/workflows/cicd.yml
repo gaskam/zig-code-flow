@@ -28,8 +28,8 @@ jobs:
       
       - name: Set up Git
         run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
+          git config --global user.name "gaspard-lebaube"
+          git config --global user.email "gaspard.lebaube@gaskam.com"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -102,8 +102,8 @@ jobs:
 
       - name: Set up Git
         run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
+          git config --global user.name "gaspard-lebaube"
+          git config --global user.email "gaspard.lebaube@gaskam.com"
       
       - name: Validate version format
         run: |
@@ -125,14 +125,14 @@ jobs:
 
       - name: Commit version changes
         run: |
-          git add package.json
-          git commit -a -m "Bump version to v$VERSION"
+          git add package.json package-lock.json
+          git commit -a -m "Bump version to v${{ needs.version-management.outputs.VERSION }}"
 
       - name: Push version changes
         uses: ad-m/github-push-action@v0.8.0
         with:
           github_token: ${{ secrets.WORKFLOW_TOKEN }}
-          branch: ${{ github.ref }}
+          branch: master
           force: true
 
       - name: Mark master push as done
