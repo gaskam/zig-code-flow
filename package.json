@@ -1,8 +1,9 @@
 {
   "name": "zig-code-flow",
   "displayName": "Zig Code Flow",
+  "description": "Zig Code Flow is a collection of snippets for Zig programming language.",
+  "icon": "images/icon.png",
   "publisher": "gaskam",
-  "description": "LEAVE BLANK",
   "version": "0.1.0",
   "engines": {
     "vscode": "^1.95.0"
@@ -22,6 +23,12 @@
   "readme": "README.md",
   "categories": [
     "Snippets"
+  ],
+  "keywords": [
+    "zig",
+    "snippets",
+    "code",
+    "flow"
   ],
   "contributes": {
     "snippets": [

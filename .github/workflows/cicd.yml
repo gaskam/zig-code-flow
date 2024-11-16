@@ -3,7 +3,6 @@ name: Publish Extension
 on:
   pull_request:
     types: [closed]
-  push:
     branches:
       - master
 
@@ -61,7 +60,7 @@ jobs:
             PR_BODY="${{ github.event.pull_request.body }}"
             if [[ "$PR_TITLE" =~ \[major\] || "$PR_BODY" =~ \[major\] ]]; then
               echo "INCREMENT=major" >> $GITHUB_ENV
-            elif [[ "$PR_TITLE" =~ \[minor\] || "$PR_BODY" =~ \[minor\] ]]; then
+            elif [[ "$PR_TITLE" =~ \[minor\] || "$PR_BODY\] =~ \[minor\] ]]; then
               echo "INCREMENT=minor" >> $GITHUB_ENV
             else
               echo "INCREMENT=patch" >> $GITHUB_ENV
@@ -111,5 +110,6 @@ jobs:
       - name: Push version changes
         uses: ad-m/github-push-action@v0.8.0
         with:
+          force: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: master
