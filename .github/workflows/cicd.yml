@@ -1,0 +1,107 @@
+name: Publish Extension
+
+on:
+  pull_request:
+    types: [closed]
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-and-publish:
+    if: github.event.pull_request.merged == true || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+
+    steps:
+      # Install jq
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      # Check repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Install Node.js (required for VSCode extensions)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Validate package.json file
+      - name: Validate package.json
+        run: jq . package.json > /dev/null
+
+      # Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Get current version
+      - name: Get current version
+        id: current_version
+        run: echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
+
+      # Analyze PR title or body to determine version increment
+      - name: Determine version increment
+        id: version_increment
+        run: |
+          if [ "${{ github.event_name }}" == "push" ]; then
+            echo "INCREMENT=patch" >> $GITHUB_ENV
+          else
+            PR_TITLE="${{ github.event.pull_request.title }}"
+            PR_BODY="${{ github.event.pull_request.body }}"
+            if [[ "$PR_TITLE" =~ \[major\] || "$PR_BODY" =~ \[major\] ]]; then
+              echo "INCREMENT=major" >> $GITHUB_ENV
+            elif [[ "$PR_TITLE" =~ \[minor\] || "$PR_BODY" =~ \[minor\] ]]; then
+              echo "INCREMENT=minor" >> $GITHUB_ENV
+            else
+              echo "INCREMENT=patch" >> $GITHUB_ENV
+            fi
+          fi
+
+      - name: Bump version
+        id: bump_version
+        run: |
+          if ! npm version $INCREMENT; then
+            echo "::error::Failed to bump version"
+            exit 1
+          fi
+          NEW_VERSION=$(jq -r .version package.json)
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      # Create a new release
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: v${{ env.NEW_VERSION }}
+          release_name: Release ${{ env.NEW_VERSION }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      # Verify marketplace token
+      - name: Verify marketplace token
+        run: |
+          if [ -z "${{ secrets.VS_MARKETPLACE_TOKEN }}" ]; then
+            echo "::error::Marketplace token missing. Add VS_MARKETPLACE_TOKEN in repository secrets."
+            exit 1
+          fi
+
+      # Publish to Visual Studio Marketplace
+      - name: Publish to Visual Studio Marketplace
+        uses: HaaLeo/publish-vscode-extension@v1.6.2
+        with:
+          pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+          registryUrl: https://marketplace.visualstudio.com
+
+      # Push new version to master
+      - name: Push version changes
+        uses: ad-m/github-push-action@v0.8.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: master
