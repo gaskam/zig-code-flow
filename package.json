@@ -1,6 +1,7 @@
 {
   "name": "zig-code-flow",
   "displayName": "Zig Code Flow",
+  "publisher": "gaskam",
   "description": "LEAVE BLANK",
   "version": "0.1.0",
   "engines": {

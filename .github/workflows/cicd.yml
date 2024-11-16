@@ -81,12 +81,14 @@ jobs:
       # Create a new release
       - name: Create GitHub Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v2.1.0
         with:
           tag_name: v${{ env.NEW_VERSION }}
-          release_name: Release ${{ env.NEW_VERSION }}
+          name: Release ${{ env.NEW_VERSION }}
           draft: false
           prerelease: false
+          generate_release_notes: true
+          make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
