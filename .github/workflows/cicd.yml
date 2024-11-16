@@ -17,19 +17,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Install jq
+      - name: Install jq
+        run: sudo apt-get install -y jq
+      
+      # Check repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
       # Set up Git
       - name: Set up Git
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          
-      # Install jq
-      - name: Install jq
-        run: sudo apt-get install -y jq
-
-      # Check repository
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
       # Install Node.js (required for VSCode extensions)
       - name: Set up Node.js
