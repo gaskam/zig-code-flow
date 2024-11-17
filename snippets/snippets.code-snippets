@@ -556,17 +556,6 @@
 
     "zig utils": {
         "prefix": "zigutils",
-        "body": [
-            "const std = @import(\"std\");",
-            "const builtin = @import(\"builtin\");",
-            "",
-            "const LineReader = struct {",
-            "\tallocator: std.mem.Allocator,",
-            "\treader: std.fs.File.Reader,",
-            "\tconst Self = @This();",
-            "",
-            "\tfn init(allocator: std.mem.Allocator, reader: std.fs.File.Reader) Self {",
-            "\t\treturn .{ .allocator = allocator, .reader = reader };",
             "\t}",
             "",
             "\t/// Reads a line and removes the newline characters(\\n, and \\r\\n for windows)",
