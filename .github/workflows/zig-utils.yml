@@ -78,10 +78,9 @@ jobs:
 
       - name: Format the file
         run: |
-          sed -e 's/\\t/\\\\t/g' -e 's/\\n/\\\\n/g' -e 's/"/\\"/g' tmp/LineReader.txt \
-          sed 's/    /\t/g' \
-          awk '{ print "\"" $0 "\"," }' \
-          sed '$ s/,$//' > tmp/LineReader.txt
+          sed -e 's/\\t/\\\\t/g' -e 's/\\n/\\\\n/g' -e 's/"/\\"/g' -e 's/    /\t/g' tmp/LineReader.txt \
+          | awk '{ print "\"" $0 "\"," }' \
+          | sed '$ s/,$//' > tmp/LineReader.txt
 
       - name: Upload formatted tmp directory
         uses: actions/upload-artifact@v4.4.3
