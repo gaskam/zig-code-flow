@@ -30,7 +30,7 @@ jobs:
 
       - name: Download raw file
         run: |
-          if ! curl https://raw.githubusercontent.com/gaskam-com/zig-utils/refs/heads/main/LineReader.zig -o tmp/LineReader.txt; then
+          if ! curl https://raw.githubusercontent.com/gaskam-com/zig-utils/refs/heads/main/LineReader.zig -o "tmp/LineReader.txt"; then
             echo "Failed to download the file"
             exit 1
           fi
@@ -51,12 +51,16 @@ jobs:
 
       - name: Check if the file exists
         run: |
-          if ! test -f tmp/LineReader.txt; then
-            echo "File not found: LineReader.txt"
+          if [ -f "tmp/LineReader.txt" ]; then
+            echo "File exists"
+          else
+            echo "File does not exist: tmp/LineReader.txt"
             exit 1
           fi
-          if ! test -f tmp/snippets_body.txt; then
-            echo "File not found: snippets_body.txt"
+          if [ -f "tmp/snippets_body.txt" ]; then
+            echo "File exists"
+          else
+            echo "File does not exist: tmp/snippets_body.txt"
             exit 1
           fi
 
