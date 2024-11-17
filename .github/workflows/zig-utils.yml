@@ -11,7 +11,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  sync:
+  initialize:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,13 +28,6 @@ jobs:
         run: |
           curl -sL https://raw.githubusercontent.com/gaskam-com/zig-utils/refs/heads/main/LineReader.zig -o $HOME/tmp/LineReader.txt
 
-      - name: Format the file
-        run: |
-          sed -e 's/\\t/\\\\t/g' -e 's/\\n/\\\\n/g' -e 's/"/\\"/g' $HOME/tmp/LineReader.txt \
-          sed 's/    /\t/g' \
-          awk '{ print "\"" $0 "\"," }' \
-          sed '$ s/,$//' > $HOME/tmp/LineReader_formatted.txt
-
       - name: Get the actual template
         run: |
           if ! jq '."zig utils".body[]' snippets.code-snippets > $HOME/tmp/snippets_body.txt; then
@@ -42,6 +35,23 @@ jobs:
             exit 1
           fi
 
+  format:
+    runs-on: ubuntu-latest
+    needs: initialize 
+
+    steps:
+      - name: Format the file
+        run: |
+          sed -e 's/\\t/\\\\t/g' -e 's/\\n/\\\\n/g' -e 's/"/\\"/g' $HOME/tmp/LineReader.txt \
+          sed 's/    /\t/g' \
+          awk '{ print "\"" $0 "\"," }' \
+          sed '$ s/,$//' > $HOME/tmp/LineReader_formatted.txt
+
+  compare:
+    runs-on: ubuntu-latest
+    needs: format
+
+    steps:
       - name: Compare the files
         run: |
           if ! diff -q $HOME/tmp/LineReader_formatted.txt $HOME/tmp/snippets_body.txt; then
