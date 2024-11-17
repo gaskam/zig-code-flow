@@ -30,7 +30,7 @@ jobs:
 
       - name: Get the actual template
         run: |
-          if ! jq '."zig utils".body[]' snippets.code-snippets > $HOME/tmp/snippets_body.txt; then
+          if ! jq '."zig utils".body[]' snippets/snippets.code-snippets > $HOME/tmp/snippets_body.txt; then
             echo "No snippets found"
             exit 1
           fi
@@ -57,11 +57,11 @@ jobs:
           if ! diff -q $HOME/tmp/LineReader_formatted.txt $HOME/tmp/snippets_body.txt; then
             echo "Files are different"
             content=$(cat $HOME/tmp/LineReader_formatted.txt)
-            jq --arg content "$content" '."zig utils".body = [$content]' snippets.code-snippets > temp.json && mv temp.json snippets.code-snippets
+            jq --arg content "$content" '."zig utils".body = [$content]' snippets/snippets.code-snippets > temp.json && mv temp.json snippets/snippets.code-snippets
             
             git config --global user.name "GitHub Actions"
             git config --global user.email "actions@github.com"
-            git add snippets.code-snippets
+            git add snippets/snippets.code-snippets
             git commit -m "Update zig utils snippet"
             git push origin HEAD:update-zig-utils
           else
