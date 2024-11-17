@@ -23,14 +23,14 @@ jobs:
       
       - name: Create a temporary folder
         run: |
-          if ! mkdir -p $HOME/tmp; then
+          if ! mkdir -p tmp; then
             echo "Failed to create the folder"
             exit 1
           fi
 
       - name: Download raw file
         run: |
-          if ! curl -sL https://raw.githubusercontent.com/gaskam-com/zig-utils/refs/heads/main/LineReader.zig -o tmp/LineReader.txt; then
+          if ! curl https://raw.githubusercontent.com/gaskam-com/zig-utils/refs/heads/main/LineReader.zig -o tmp/LineReader.txt; then
             echo "Failed to download the file"
             exit 1
           fi
