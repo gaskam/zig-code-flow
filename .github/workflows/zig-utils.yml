@@ -42,12 +42,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check if the file exists
+        run: |
+          if ! test -f $HOME/tmp/LineReader.txt; then
+            echo "File not found"
+            exit 1
+          fi
+
       - name: Format the file
         run: |
           sed -e 's/\\t/\\\\t/g' -e 's/\\n/\\\\n/g' -e 's/"/\\"/g' $HOME/tmp/LineReader.txt \
           sed 's/    /\t/g' \
           awk '{ print "\"" $0 "\"," }' \
-          sed '$ s/,$//' > $HOME/tmp/LineReader_formatted.txt
+          sed '$ s/,$//' > $HOME/tmp/LineReader.txt
 
   compare:
     runs-on: ubuntu-latest
@@ -59,9 +66,9 @@ jobs:
 
       - name: Compare the files
         run: |
-          if ! diff -q $HOME/tmp/LineReader_formatted.txt $HOME/tmp/snippets_body.txt; then
+          if ! diff -q $HOME/tmp/LineReader.txt $HOME/tmp/snippets_body.txt; then
             echo "Files are different"
-            content=$(cat $HOME/tmp/LineReader_formatted.txt)
+            content=$(cat $HOME/tmp/LineReader.txt)
             jq --arg content "$content" '."zig utils".body = [$content]' snippets/snippets.code-snippets > temp.json && mv temp.json snippets/snippets.code-snippets
             
             git config --global user.name "GitHub Actions"
