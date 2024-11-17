@@ -41,6 +41,12 @@ jobs:
           | grep '"body":' \
           | sed -E 's/.*"body": *\[//; s/\].*//g' > tmp/snippets_body.txt
 
+      - name: Upload tmp directory
+        uses: actions/upload-artifact@v4.4.3
+        with:
+          name: tmp
+          path: tmp/
+
   format:
     runs-on: ubuntu-latest
     needs: initialize 
@@ -48,6 +54,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Download tmp directory
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: tmp
+          path: tmp/
 
       - name: Check if the file exists
         run: |
@@ -71,6 +83,12 @@ jobs:
           awk '{ print "\"" $0 "\"," }' \
           sed '$ s/,$//' > tmp/LineReader.txt
 
+      - name: Upload formatted tmp directory
+        uses: actions/upload-artifact@v4.4.3
+        with:
+          name: tmp
+          path: tmp/
+
   compare:
     runs-on: ubuntu-latest
     needs: format
@@ -78,6 +96,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Download tmp directory
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: tmp
+          path: tmp/
 
       - name: Compare the files
         run: |
