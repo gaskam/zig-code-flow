@@ -108,17 +108,22 @@ jobs:
           if ! diff -q tmp/LineReader.txt tmp/snippets_body.txt; then
             echo "Files are different"
             
-            # Read the new content
-            new_content=$(cat tmp/LineReader.txt)
-            
-            # Update the snippets file using sed
-            sed -i '/"zig utils": {/,/}/!b;/"body": \[/,/\]/c\        "body": [\n'"$new_content"'\n        ]' snippets/snippets.code-snippets
-            
+            # Setup git
             git config --global user.name "GitHub Actions"
             git config --global user.email "actions@github.com"
+            
+            # Create and checkout update branch
+            git fetch origin
+            git checkout -B update-zig-utils origin/master
+            
+            # Update the snippets file using sed
+            new_content=$(cat tmp/LineReader.txt)
+            sed -i '/"zig utils": {/,/}/!b;/"body": \[/,/\]/c\        "body": [\n'"$new_content"'\n        ]' snippets/snippets.code-snippets
+            
+            # Commit and force push
             git add "snippets/snippets.code-snippets"
             git commit -m "Update zig utils snippet"
-            git push origin HEAD:update-zig-utils
+            git push --force origin update-zig-utils
           else
             echo "Files are the same"
             exit 0
