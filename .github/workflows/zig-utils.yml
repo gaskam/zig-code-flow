@@ -56,7 +56,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-				
+
       - name: Compare the files
         run: |
           if ! diff -q $HOME/tmp/LineReader_formatted.txt $HOME/tmp/snippets_body.txt; then
