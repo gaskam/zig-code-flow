@@ -30,16 +30,18 @@ jobs:
 
       - name: Get the actual template
         run: |
-          if ! jq '."zig utils".body[]' snippets/snippets.code-snippets > $HOME/tmp/snippets_body.txt; then
-            echo "No snippets found"
-            exit 1
-          fi
+          sed -n '/"zig utils": {/,/}/p' "snippets/snippets.code-snippets" \
+          | grep '"body":' \
+          | sed -E 's/.*"body": *\[//; s/\].*//g' > $HOME/tmp/snippets_body.txt
 
   format:
     runs-on: ubuntu-latest
     needs: initialize 
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Format the file
         run: |
           sed -e 's/\\t/\\\\t/g' -e 's/\\n/\\\\n/g' -e 's/"/\\"/g' $HOME/tmp/LineReader.txt \
@@ -52,6 +54,9 @@ jobs:
     needs: format
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+				
       - name: Compare the files
         run: |
           if ! diff -q $HOME/tmp/LineReader_formatted.txt $HOME/tmp/snippets_body.txt; then
