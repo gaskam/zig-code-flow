@@ -107,12 +107,13 @@ jobs:
         run: |
           if ! diff -q tmp/LineReader.txt tmp/snippets_body.txt; then
             echo "Files are different"
-            content=$(cat tmp/LineReader.txt | jq -Rs .)
-            jq --argjson content "$content" '."zig utils".body = $content' snippets/snippets.code-snippets > temp.json && mv temp.json snippets/snippets.code-snippets
+            content=$(cat tmp/LineReader.txt | sed -e 's/"/\\"/g' -e 's/^/"/' -e 's/$/",/')
+            sed -i '/"zig utils": {/,/}/ { /"body": \[/,/\]/ { /"body": \[/! { /\]/!d } } }' snippets/snippets.code-snippets
+            sed -i "/\"zig utils\": {/a \    \"body\": [\n$content\n    ]," snippets/snippets.code-snippets
             
             git config --global user.name "GitHub Actions"
             git config --global user.email "actions@github.com"
-            git add snippets/snippets.code-snippets
+            git add "snippets/snippets.code-snippets"
             git commit -m "Update zig utils snippet"
             git push origin HEAD:update-zig-utils
           else
