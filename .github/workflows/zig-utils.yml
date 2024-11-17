@@ -1,0 +1,70 @@
+name: Zig Utils
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Create a temporary folder
+        run: mkdir -p $HOME/tmp
+
+      - name: Download raw file
+        run: |
+          curl -sL https://raw.githubusercontent.com/gaskam-com/zig-utils/refs/heads/main/LineReader.zig -o $HOME/tmp/LineReader.txt
+
+      - name: Format the file
+        run: |
+          sed -e 's/\\t/\\\\t/g' -e 's/\\n/\\\\n/g' -e 's/"/\\"/g' $HOME/tmp/LineReader.txt \
+          sed 's/    /\t/g' \
+          awk '{ print "\"" $0 "\"," }' \
+          sed '$ s/,$//' > $HOME/tmp/LineReader_formatted.txt
+
+      - name: Get the actual template
+        run: |
+          if ! jq '."zig utils".body[]' snippets.code-snippets > $HOME/tmp/snippets_body.txt; then
+            echo "No snippets found"
+            exit 1
+          fi
+
+      - name: Compare the files
+        run: |
+          if ! diff -q $HOME/tmp/LineReader_formatted.txt $HOME/tmp/snippets_body.txt; then
+            echo "Files are different"
+            content=$(cat $HOME/tmp/LineReader_formatted.txt)
+            jq --arg content "$content" '."zig utils".body = [$content]' snippets.code-snippets > temp.json && mv temp.json snippets.code-snippets
+            
+            git config --global user.name "GitHub Actions"
+            git config --global user.email "actions@github.com"
+            git add snippets.code-snippets
+            git commit -m "Update zig utils snippet"
+            git push origin HEAD:update-zig-utils
+          else
+            echo "Files are the same"
+            exit 0
+          fi
+        
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7.0.5
+        with:
+          token: ${{ secrets.WORKFLOW_TOKEN }}
+          commit-message: Update zig utils snippet
+          title: 'Update zig utils snippet'
+          body: 'Automated PR to update zig utils snippet'
+          branch: update-zig-utils
+          delete-branch: true
