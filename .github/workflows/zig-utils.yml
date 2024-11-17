@@ -87,6 +87,7 @@ jobs:
         with:
           name: tmp
           path: tmp/
+          overwrite: true
 
   compare:
     runs-on: ubuntu-latest
