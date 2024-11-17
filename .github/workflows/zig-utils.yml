@@ -108,7 +108,7 @@ jobs:
           if ! diff -q tmp/LineReader.txt tmp/snippets_body.txt; then
             echo "Files are different"
             content=$(cat tmp/LineReader.txt | sed -e 's/"/\\"/g' -e 's/^/"/' -e 's/$/",/')
-            sed -i '/"zig utils": {/,/}/ { /"body": \[/,/\]/ { /"body": \[/! { /\]/!d } } }' snippets/snippets.code-snippets
+            sed -i '/"zig utils": {/,/},/ { /"body": \[/,/\],/d }' snippets/snippets.code-snippets
             sed -i "/\"zig utils\": {/a \    \"body\": [\n$content\n    ]," snippets/snippets.code-snippets
             
             git config --global user.name "GitHub Actions"
