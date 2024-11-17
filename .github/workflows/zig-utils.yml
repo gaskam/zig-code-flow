@@ -22,17 +22,24 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Create a temporary folder
-        run: mkdir -p $HOME/tmp
+        run: |
+          if ! mkdir -p $HOME/tmp; then
+            echo "Failed to create the folder"
+            exit 1
+          fi
 
       - name: Download raw file
         run: |
-          curl -sL https://raw.githubusercontent.com/gaskam-com/zig-utils/refs/heads/main/LineReader.zig -o $HOME/tmp/LineReader.txt
+          if ! curl -sL https://raw.githubusercontent.com/gaskam-com/zig-utils/refs/heads/main/LineReader.zig -o tmp/LineReader.txt; then
+            echo "Failed to download the file"
+            exit 1
+          fi
 
       - name: Get the actual template
         run: |
           sed -n '/"zig utils": {/,/}/p' "snippets/snippets.code-snippets" \
           | grep '"body":' \
-          | sed -E 's/.*"body": *\[//; s/\].*//g' > $HOME/tmp/snippets_body.txt
+          | sed -E 's/.*"body": *\[//; s/\].*//g' > tmp/snippets_body.txt
 
   format:
     runs-on: ubuntu-latest
@@ -44,17 +51,21 @@ jobs:
 
       - name: Check if the file exists
         run: |
-          if ! test -f $HOME/tmp/LineReader.txt; then
-            echo "File not found"
+          if ! test -f tmp/LineReader.txt; then
+            echo "File not found: LineReader.txt"
+            exit 1
+          fi
+          if ! test -f tmp/snippets_body.txt; then
+            echo "File not found: snippets_body.txt"
             exit 1
           fi
 
       - name: Format the file
         run: |
-          sed -e 's/\\t/\\\\t/g' -e 's/\\n/\\\\n/g' -e 's/"/\\"/g' $HOME/tmp/LineReader.txt \
+          sed -e 's/\\t/\\\\t/g' -e 's/\\n/\\\\n/g' -e 's/"/\\"/g' tmp/LineReader.txt \
           sed 's/    /\t/g' \
           awk '{ print "\"" $0 "\"," }' \
-          sed '$ s/,$//' > $HOME/tmp/LineReader.txt
+          sed '$ s/,$//' > tmp/LineReader.txt
 
   compare:
     runs-on: ubuntu-latest
@@ -66,9 +77,9 @@ jobs:
 
       - name: Compare the files
         run: |
-          if ! diff -q $HOME/tmp/LineReader.txt $HOME/tmp/snippets_body.txt; then
+          if ! diff -q tmp/LineReader.txt tmp/snippets_body.txt; then
             echo "Files are different"
-            content=$(cat $HOME/tmp/LineReader.txt)
+            content=$(cat tmp/LineReader.txt)
             jq --arg content "$content" '."zig utils".body = [$content]' snippets/snippets.code-snippets > temp.json && mv temp.json snippets/snippets.code-snippets
             
             git config --global user.name "GitHub Actions"
