@@ -80,11 +80,10 @@ jobs:
           git merge --strategy-option theirs || true
 
       - name: Push version changes
-        uses: ad-m/github-push-action@v0.8.0
-        with:
-          github_token: ${{ secrets.WORKFLOW_TOKEN }}
-          branch: HEAD:master
-          force_with_lease: true
+        run: |
+          git push origin HEAD:master
+        env:
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
 
   success:
     needs: [commit]
