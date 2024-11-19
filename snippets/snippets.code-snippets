@@ -23,7 +23,8 @@
             "\tstd.debug.print(\"Hello, {s}!\\n\", .{\"World\"});",
             "}"
         ],
-        "description": "Prints 'Hello, World!' to the console"
+        "description": "Prints 'Hello, World!' to the console",
+        "isFileTemplate": true
     },
     "launch": {
         "prefix": ["launch", "startup"],
@@ -36,6 +37,25 @@
             ""
         ],
         "description": "Initializes a main function",
+        "isFileTemplate": true
+    },
+    "project template": {
+        "prefix": ["project", "template"],
+        "body": [
+            "const std = @import(\"std\");",
+            "",
+            "fn ${1:name}($2)${3| !, |}${4:void} {",
+            "\t",
+            "}",
+            "",
+            "pub fn main() !void {",
+            "\t$0",
+            "\t",
+            "\t${1:name}();",
+            "}",
+            ""
+        ],
+        "description": "Creates a new project template",
         "isFileTemplate": true
     },
     "import": {
