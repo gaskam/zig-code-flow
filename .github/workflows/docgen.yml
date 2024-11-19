@@ -56,6 +56,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref}}
+          fetch-depth: 0
+          token: ${{ secrets.WORKFLOW_TOKEN}}
 
       - name: Download a Build Artifact
         uses: actions/download-artifact@v4.1.8
@@ -79,8 +83,9 @@ jobs:
         uses: ad-m/github-push-action@v0.8.0
         with:
           github_token: ${{ secrets.WORKFLOW_TOKEN }}
-          branch: ${{ github.event.pull_request.head.ref }}
-          force: true
+          repository: ${{ github.repository }}
+          branch: master
+          force_with_lease: true
 
   success:
     needs: [commit]
