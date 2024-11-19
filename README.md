@@ -35,6 +35,7 @@ Learn more about available snippets in the sections below.
 | `ziglove` | Prints 'I love ZIG!' to the console |
 | `zighello`, `helloworld` | Prints 'Hello, World!' to the console |
 | `launch`, `startup` | Initializes a main function |
+| `project`, `template` | Creates a new project template |
 | `import` | Import a module using @import |
 | `import_std`, `imps` | Import the standard library |
 | `import_builtin`, `impb` | Import the builtin module |
