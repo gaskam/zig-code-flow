@@ -18,6 +18,7 @@ updates:
     labels:
       - "npm"
       - "dependencies"
+      - "automerge"
     rebase-strategy: "auto"
     reviewers:
       - "gaspard-lebaube"
