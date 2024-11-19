@@ -14,9 +14,20 @@
         "description": "Prints 'I love ZIG!' to the console",
         "isFileTemplate": true
     },
+    "hello world": {
+        "prefix": ["zighello", "helloworld"],
+        "body": [
+            "const std = @import(\"std\");",
+            "",
+            "pub fn main() void {",
+            "\tstd.debug.print(\"Hello, {s}!\\n\", .{\"World\"});",
+            "}"
+        ],
+        "description": "Prints 'Hello, World!' to the console"
+    },
     "launch": {
-        "prefix" : ["launch", "startup"],
-        "body" : [
+        "prefix": ["launch", "startup"],
+        "body": [
             "const std = @import(\"std\");",
             "",
             "pub fn main() !void {",
@@ -24,28 +35,22 @@
             "}",
             ""
         ],
-        "description" : "Initializes a main function",
+        "description": "Initializes a main function",
         "isFileTemplate": true
     },
     "import": {
         "prefix": "import",
-        "body": [
-            "const ${1:name} = @import(\"${2:file}\");"
-        ],
+        "body": ["const ${1:name} = @import(\"${2:file}\");"],
         "description": "Import a module using @import"
     },
     "import std": {
         "prefix": ["import_std", "imps"],
-        "body": [
-            "const std = @import(\"std\");"
-        ],        
+        "body": ["const std = @import(\"std\");"],
         "description": "Import the standard library"
     },
     "import builtin": {
         "prefix": ["import_builtin", "impb"],
-        "body": [
-            "const builtin = @import(\"builtin\");"
-        ],
+        "body": ["const builtin = @import(\"builtin\");"],
         "description": "Import the builtin module"
     },
 
@@ -103,9 +108,7 @@
 
     "debug": {
         "prefix": "debug",
-        "body": [
-            "std.debug.print(\"${1:fmt}\", .{ $0 });"
-        ],
+        "body": ["std.debug.print(\"${1:fmt}\", .{ $0 });"],
         "description": "Print debug output using std.debug.print"
     },
 
@@ -113,51 +116,35 @@
 
     "comptime": {
         "prefix": "comptime",
-        "body": [
-            "comptime ${1:name} = $0;"
-        ],
+        "body": ["comptime ${1:name} = $0;"],
         "description": "Define a compile-time variable"
     },
     "var": {
         "prefix": "var",
-        "body": [
-            "var ${1:name}: ${2:type} = $0;"
-        ],
+        "body": ["var ${1:name}: ${2:type} = $0;"],
         "description": "Declare a variable with explicit type"
     },
     "const": {
         "prefix": "const",
-        "body": [
-            "const ${1:name} = $0;"
-        ],
+        "body": ["const ${1:name} = $0;"],
         "description": "Declare a constant with inferred type"
     },
     "const type": {
         "prefix": "const_type",
-        "body": [
-            "const ${1:name}: ${2:type} = $0;"
-        ],
+        "body": ["const ${1:name}: ${2:type} = $0;"],
         "description": "Declare a constant with explicit type"
     },
 
     // Data Structures
-    
+
     "struct": {
         "prefix": "struct",
-        "body": [
-            "struct {",
-            "\t$TM_SELECTED_TEXT$0",
-            "}"
-        ],
+        "body": ["struct {", "\t$TM_SELECTED_TEXT$0", "}"],
         "description": "Create an anonymous struct"
     },
     "const struct": {
         "prefix": "const_struct",
-        "body": [
-            "const ${1:name} = struct {",
-            "\t$TM_SELECTED_TEXT$0",
-            "};"
-        ],
+        "body": ["const ${1:name} = struct {", "\t$TM_SELECTED_TEXT$0", "};"],
         "description": "Create a named struct type"
     },
     "enum": {
@@ -183,11 +170,7 @@
 
     "for value": {
         "prefix": "for_value",
-        "body": [
-            "for ($2) |${1:v}| {",
-            "\t$TM_SELECTED_TEXT$0",
-            "}"
-        ],
+        "body": ["for ($2) |${1:v}| {", "\t$TM_SELECTED_TEXT$0", "}"],
         "description": "Create a for loop iterating over values"
     },
     "for value index": {
@@ -201,11 +184,7 @@
     },
     "for inline": {
         "prefix": "for_inline",
-        "body": [
-            "inline for ($2) |${1:v}| {",
-            "\t$TM_SELECTED_TEXT$0",
-            "}"
-        ],
+        "body": ["inline for ($2) |${1:v}| {", "\t$TM_SELECTED_TEXT$0", "}"],
         "description": "Create an inline for loop"
     },
     "for label": {
@@ -229,11 +208,7 @@
     },
     "while": {
         "prefix": "while",
-        "body": [
-            "while ($1)${2: : ()} {",
-            "\t$TM_SELECTED_TEXT$0",
-            "}"
-        ],
+        "body": ["while ($1)${2: : ()} {", "\t$TM_SELECTED_TEXT$0", "}"],
         "description": "Create a while loop"
     },
     "while else": {
@@ -271,28 +246,20 @@
     },
     "while inline": {
         "prefix": "while_inline",
-        "body": [
-            "inline while ($1)${2: : ()} {",
-            "\t$TM_SELECTED_TEXT$0",
-            "}"
-        ],
+        "body": ["inline while ($1)${2: : ()} {", "\t$TM_SELECTED_TEXT$0", "}"],
         "description": "Create an inline while loop"
     },
-    
+
     // Array and Lists
-    
+
     "list": {
         "prefix": "list",
-        "body": [
-            ".{$TM_SELECTED_TEXT$0};"
-        ],
+        "body": [".{$TM_SELECTED_TEXT$0};"],
         "description": "Create an anonymous list literal"
     },
     "array init": {
         "prefix": "array_init",
-        "body": [
-            "&[_${1::sentinel}]${2:type}{$0};"
-        ],
+        "body": ["&[_${1::sentinel}]${2:type}{$0};"],
         "description": "Initialize an array with optional sentinel"
     },
     "array list": {
@@ -311,9 +278,7 @@
     },
     "to owned slice": {
         "prefix": "to_owned_slice",
-        "body": [
-            "${0:${TM_SELECTED_TEXT:arrayList}}.toOwnedSlice();"
-        ],
+        "body": ["${0:${TM_SELECTED_TEXT:arrayList}}.toOwnedSlice();"],
         "description": "Convert ArrayList to owned slice"
     },
     "string hash map": {
@@ -368,22 +333,12 @@
 
     "if": {
         "prefix": "if",
-        "body": [
-            "if ($1) {",
-            "\t$TM_SELECTED_TEXT$0",
-            "}"
-        ],
+        "body": ["if ($1) {", "\t$TM_SELECTED_TEXT$0", "}"],
         "description": "Create an if statement"
     },
     "if else": {
         "prefix": "if_else",
-        "body": [
-            "if ($1) {",
-            "\t$TM_SELECTED_TEXT$0",
-            "} else {",
-            "\t",
-            "}"
-        ],
+        "body": ["if ($1) {", "\t$TM_SELECTED_TEXT$0", "} else {", "\t", "}"],
         "description": "Create an if-else statement"
     },
     "if else option": {
@@ -400,70 +355,45 @@
     },
     "switch": {
         "prefix": "switch",
-        "body": [
-            "switch ($1) {",
-            "\t$2 => $3,",
-            "\telse => $0,",
-            "}"
-        ],
+        "body": ["switch ($1) {", "\t$2 => $3,", "\telse => $0,", "}"],
         "description": "Create a switch statement"
     },
     "orelse": {
         "prefix": "orelse",
-        "body": [
-            "orelse return $0;"
-        ],
+        "body": ["orelse return $0;"],
         "description": "Handle null with orelse return"
     },
 
     // Error Handling
-    
+
     "try": {
         "prefix": "try",
-        "body": [
-            "try ${1:${TM_SELECTED_TEXT/(.*);$/$1/}};$0"
-        ],
+        "body": ["try ${1:${TM_SELECTED_TEXT/(.*);$/$1/}};$0"],
         "description": "Try an expression that may return an error"
     },
     "catch": {
         "prefix": "catch",
-        "body": [
-            "${TM_SELECTED_TEXT/(.*);$/$1/} catch ${0:unreachable};"
-        ],
+        "body": ["${TM_SELECTED_TEXT/(.*);$/$1/} catch ${0:unreachable};"],
         "description": "Catch and handle errors from an expression"
     },
     "defer": {
         "prefix": "defer",
-        "body": [
-            "defer {",
-            "\t$TM_SELECTED_TEXT$0",
-            "}"
-        ],
+        "body": ["defer {", "\t$TM_SELECTED_TEXT$0", "}"],
         "description": "Create a defer block"
     },
     "error defer": {
         "prefix": "errdefer",
-        "body": [
-            "errdefer {",
-            "\t$TM_SELECTED_TEXT$0",
-            "}"
-        ],
+        "body": ["errdefer {", "\t$TM_SELECTED_TEXT$0", "}"],
         "description": "Create an errdefer block"
     },
     "error": {
         "prefix": "error",
-        "body": [
-            "error.${0:Error}",
-        ],
+        "body": ["error.${0:Error}"],
         "description": "Create an error value"
     },
     "error set": {
         "prefix": "error_set",
-        "body": [
-            "error {",
-            "\t${1:Error},$0",
-            "};"
-        ],
+        "body": ["error {", "\t${1:Error},$0", "};"],
         "description": "Define an error set"
     },
 
@@ -488,14 +418,10 @@
 
     "asm": {
         "prefix": "asm",
-        "body": [
-            "asm${1|volatile, |} (",
-            "\t$TM_SELECTED_TEXT$0",
-            ")"
-        ],
+        "body": ["asm${1|volatile, |} (", "\t$TM_SELECTED_TEXT$0", ")"],
         "description": "Insert inline assembly code"
     },
-    
+
     // File Information
 
     "file name": {
@@ -533,10 +459,10 @@
         "body": "${WORKSPACE_FOLDER}",
         "description": "Insert current workspace root folder path"
     },
-    
+
     // Random values
 
-    "random value": { 
+    "random value": {
         "prefix": "randomvalue",
         "body": "${RANDOM}",
         "description": "Insert random number"
