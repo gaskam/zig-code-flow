@@ -70,17 +70,20 @@ jobs:
           else
             CURRENT_VERSION=$(jq -r .version package.json)
             INCREMENT="patch"
-            if echo "${{ github.event.pull_request.title }} ${{ github.event.pull_request.body }}" | grep -qi '\[major\]'; then
+            PR_CONTENT="${{ github.event.pull_request.title }} ${{ github.event.pull_request.body }}"
+            if echo "$PR_CONTENT" | grep -qi '\[major\]'; then
               INCREMENT="major"
-            elif echo "${{ github.event.pull_request.title }} ${{ github.event.pull_request.body }}" | grep -qi '\[minor\]'; then
+            elif echo "$PR_CONTENT" | grep -qi '\[minor\]'; then
               INCREMENT="minor"
             fi
-            npm version $INCREMENT
+            npm version $INCREMENT --no-git-tag-version
             VERSION=$(jq -r .version package.json)
-            gh release create "v$VERSION" \
-              --title "Release $VERSION" \
-              --generate-notes \
-              --latest
+            if ! gh release view "v$VERSION" &>/dev/null; then
+              gh release create "v$VERSION" \
+                --title "Release $VERSION" \
+                --generate-notes \
+                --latest || true
+            fi
           fi
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
         env:
