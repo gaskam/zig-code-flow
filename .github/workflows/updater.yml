@@ -1,0 +1,23 @@
+name: GitHub Actions Version Updater
+
+on:
+  schedule:
+    - cron:  '30 06,18 * * *'
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.WORKFLOW_TOKEN }}
+
+      - name: Run GitHub Actions Version Updater
+        uses: saadmk11/github-actions-version-updater@v0.8.1
+        with:
+          token: ${{ secrets.WORKFLOW_TOKEN }}
+          committer_username: 'updater[bot]'
