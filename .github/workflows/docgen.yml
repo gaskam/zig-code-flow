@@ -67,7 +67,7 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add README.md
-          git commit -a -m "Update README.md with latest documentation"
+          git commit -a -m "Update README.md with latest documentation" || exit 0
 
       - name: Pull latest changes
         run: |
@@ -82,11 +82,20 @@ jobs:
           branch: ${{ github.event.pull_request.head.ref }}
           force: true
 
+  success:
+    needs: [commit]
+    if: success()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Comment on PR
         uses: thollander/actions-comment-pull-request@v3.0.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          message: "🤖 Documentation generation complete. README.md updated.\n  Have a nice day!"
+          message: "🤖 Documentation generation complete. README.md updated.\nHave a nice day!"
 
   error:
     needs: [docgen, commit]
