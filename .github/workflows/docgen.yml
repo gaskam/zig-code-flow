@@ -40,7 +40,7 @@ jobs:
           compression-level: 1
           if-no-files-found: error
           retention-days: 1
-					
+
   commit:
     needs: [docgen]
     if: github.event_name == 'pull_request' && github.event.action == 'opened' || github.event.action == 'reopened'
