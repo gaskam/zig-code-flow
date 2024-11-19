@@ -85,22 +85,11 @@ jobs:
                 --latest || true
             else
               echo "Release v$VERSION already exists"
-              npm version $INCREMENT --no-git-tag-version
-              VERSION=$(jq -r .version package.json)
-              if ! gh release view "v$VERSION" &>/dev/null; then
-                gh release create "v$VERSION" \
-                  --title "Release $VERSION" \
-                  --generate-notes \
-                  --latest || true
-              else
-                echo "Release v$VERSION already exists too..."
-                exit 1
-              fi
             fi
           fi
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
 
       - name: Mark version work as done
         id: mark_version
