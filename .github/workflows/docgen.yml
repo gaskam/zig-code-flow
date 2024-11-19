@@ -69,6 +69,11 @@ jobs:
           git add README.md
           git commit -a -m "Update README.md with latest documentation"
 
+      - name: Pull latest changes
+        run: |
+          git config pull.rebase false
+          git pull --no-ff --allow-unrelated-histories origin ${{ github.event.pull_request.head.ref }}
+
       - name: Push version changes
         uses: ad-m/github-push-action@v0.8.0
         with:
