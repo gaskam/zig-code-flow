@@ -2,7 +2,7 @@ name: Doc Generation
 
 on:
   pull_request:
-    types: [opened, reopened]
+    types: [opened, reopened, synchronize]
     branches:
       - master
 
@@ -23,6 +23,7 @@ jobs:
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
+          git config pull.ff only 
           git pull origin ${{ github.event.pull_request.head.ref }}
 
       - name: Install Bun
