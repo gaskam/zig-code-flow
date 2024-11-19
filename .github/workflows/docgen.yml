@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   docgen:
-    if: github.event_name == 'pull_request' && github.event.action == 'opened' || github.event.action == 'reopened'
+    if: github.event_name == 'pull_request' && github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'synchronize'
     runs-on: ubuntu-latest
 
     steps:			
@@ -50,7 +50,7 @@ jobs:
 
   commit:
     needs: [docgen]
-    if: github.event_name == 'pull_request' && github.event.action == 'opened' || github.event.action == 'reopened'
+    if: github.event_name == 'pull_request' && github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'synchronize'
     runs-on: ubuntu-latest
 
     steps:
