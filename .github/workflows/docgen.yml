@@ -24,7 +24,7 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git config pull.rebase false
-          git pull --no-ff origin ${{ github.event.pull_request.head.ref }}
+          git pull --no-ff --allow-unrelated-histories origin ${{ github.event.pull_request.head.ref }}
 
       - name: Install Bun
         run: curl -fsSL https://bun.sh/install | bash
