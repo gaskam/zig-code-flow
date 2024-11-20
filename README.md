@@ -1,4 +1,7 @@
 # Zig Code Flow
+![GitHub Release](https://img.shields.io/github/v/release/gaskam-com/zig-code-flow?display_name=tag&style=for-the-badge)
+![GitHub License](https://img.shields.io/github/license/gaskam-com/zig-code-flow?style=for-the-badge)
+
 A comprehensive VS Code extension providing Zig language support with powerful snippets to enhance your Zig development experience. As we all know, writing zig code can sometimes be tedious, as there are a lot of long common patterns. Who remembers how to properly create an allocator? This extension tries to cover your back by providing you with the most common patterns we experience while developing.
 
 ## Features

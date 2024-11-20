@@ -422,6 +422,14 @@
         "description": "Define an error set"
     },
 
+    // Random
+
+    "randint": {
+        "prefix": "randint",
+        "body": ["std.crypto.random.intRange${1|AtMost,LessThan|}(${2:type}, ${3:min}, ${0:max});"],
+        "description": "Generate a random integer"
+    },
+
     // Testing
 
     "test": {
