@@ -131,6 +131,11 @@
         "body": ["std.debug.print(\"${1:fmt}\", .{ $0 });"],
         "description": "Print debug output using std.debug.print"
     },
+    "stdout": {
+        "prefix": "stdout",
+        "body": "const ${0:stdout} = std.io.getStdOut().writer();",
+        "description": "Get the standard output writer"
+    },
 
     // Variables
 
