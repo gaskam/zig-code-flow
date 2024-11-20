@@ -81,7 +81,7 @@ jobs:
 
       - name: Push version changes
         run: |
-          git push origin HEAD:master
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
         env:
           GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
 
