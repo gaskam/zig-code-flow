@@ -1,6 +1,17 @@
 name: Publish Extension
 
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to publish
+        required: true
+        type: choice
+        options:
+        - major
+        - minor
+        - patch
+
   pull_request:
     types: [closed]
     branches:
@@ -14,7 +25,7 @@ permissions:
 
 jobs:
   initialize:
-    if: github.event.pull_request.merged == true || github.event_name == 'release'
+    if: github.event.pull_request.merged == true || github.event_name == 'release' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     outputs:
       INIT_DONE: ${{ steps.mark_init.outputs.INIT_DONE }}
@@ -48,7 +59,7 @@ jobs:
 
   version-management:
     needs: [initialize]
-    if: github.event.pull_request.merged == true || github.event_name == 'release'
+    if: github.event.pull_request.merged == true || github.event_name == 'release' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     outputs:
       VERSION_DONE: ${{ steps.mark_version.outputs.VERSION_DONE }}
@@ -67,6 +78,19 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "release" ]; then
             VERSION=$(echo "${{ github.event.release.tag_name }}" | sed 's/^v//')
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            CURRENT_VERSION=$(jq -r .version package.json)
+            INCREMENT="${{ github.event.inputs.version }}"
+            npm version $INCREMENT --no-git-tag-version
+            VERSION=$(jq -r .version package.json)
+            if ! gh release view "v$VERSION" &>/dev/null; then
+              gh release create "v$VERSION" \
+                --title "Release $VERSION" \
+                --generate-notes \
+                --latest || true
+            else
+              echo "Release v$VERSION already exists"
+            fi
           else
             CURRENT_VERSION=$(jq -r .version package.json)
             INCREMENT="patch"
