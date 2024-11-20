@@ -1,5 +1,5 @@
 // @ts-ignore
-import README from "./README.md" with { type: "text" };
+let README = await Bun.file("./README.md").text();
 
 const PATH = "snippets/snippets.code-snippets";
 
@@ -43,5 +43,18 @@ groups.forEach((group) => {
     content += "\n\n";
 });
 
-await Bun.write("./README.md", README.replace(/## Snippets.*?\n## /s, `## Snippets\n\n${content}## `));
+README = README.replace(/## Snippets.*?\n## /s, `## Snippets\n\n${content}## `);
 
+// @ts-ignore
+let titles: string[] = README.match(/^(#.*)/gm);
+titles?.splice(0, titles.indexOf('## Table of Contents') + 1);
+titles = titles?.map((title) => title.replace('## ', '* ').replaceAll('#', '\t'));
+titles = titles?.map((title) => {
+    const name = title.match(/\* (.*)/)?.[1];
+    const prefix = title.match(/.*\* /)?.[0];
+    return `${prefix}[${name}](#${name?.toLowerCase().replaceAll(' ', '-')})`;
+});
+
+README = README.replace(/## Table of Contents.*?\n## /s, `## Table of Contents\n${titles.join('\n')}\n\n## `);
+
+Bun.write("./README.md", README);
