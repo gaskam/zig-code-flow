@@ -297,9 +297,19 @@
     "fixed array list": {
         "prefix": ["fixed_array_list", "array_list_length"],
         "body": [
-            "var ${1:name} = std.ArrayList(${2:type}).initCapacity(${3:allocator}, ${0:length});"
+            "var ${1:name} = try std.ArrayList(${2:type}).initCapacity(${3:allocator}, ${0:length});"
         ],
         "description": "Create an array list with fixed capacity"
+    },
+    "append": {
+        "prefix": "append",
+        "body": ["try ${1:${TM_SELECTED_TEXT:arrayList}}.append($0);"],
+        "description": "Append an element to an array list"
+    },
+    "append assume capacity": {
+        "prefix": "append_assume_capacity",
+        "body": ["${1:${TM_SELECTED_TEXT:arrayList}}.appendAssumeCapacity($0);"],
+        "description": "Append an element to an array list assuming there is enough capacity"
     },
     "to owned slice": {
         "prefix": "to_owned_slice",
@@ -327,7 +337,7 @@
         "prefix": ["GPA", "general_purpose_allocator"],
         "body": [
             "var ${1:GPA} = std.heap.GeneralPurposeAllocator(.{}){};",
-            "defer $1.deinit();",
+            "defer _ = $1.deinit();",
             "const ${2:allocator} = $1.allocator();",
             "$0"
         ],
@@ -346,9 +356,9 @@
     "fixed buffer allocator": {
         "prefix": ["FBA", "fixed_buffer_allocator"],
         "body": [
-            "var ${1:buffer}: [${2:length}]${3:type} = undefined;",
-            "var ${4:FBA} = std.heap.FixedBufferAllocator.init(&$1);",
-            "const ${5:allocator} = $4.allocator();",
+            "var ${1:buffer}: [${2:length}]u8 = undefined;",
+            "var ${3:FBA} = std.heap.FixedBufferAllocator.init(&$1);",
+            "const ${4:allocator} = $3.allocator();",
             "$0"
         ],
         "description": "Initialize a Fixed Buffer Allocator (FBA)"
