@@ -126,6 +126,8 @@ Learn more about available snippets in the sections below.
 | `array_init` | Initialize an array with optional sentinel |
 | `array_list` | Create a dynamic array list |
 | `fixed_array_list`, `array_list_length` | Create an array list with fixed capacity |
+| `append` | Append an element to an array list |
+| `append_assume_capacity` | Append an element to an array list assuming there is enough capacity |
 | `to_owned_slice` | Convert ArrayList to owned slice |
 | `string_hash_map` | Create a hash map with string keys |
 | `sort` | Sort slice using std.sort |
