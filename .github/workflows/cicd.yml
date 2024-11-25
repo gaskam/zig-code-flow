@@ -129,7 +129,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
         with:
-          ref: ${{ github.head_ref}}
+          ref: master
           fetch-depth: 0
           token: ${{ secrets.WORKFLOW_TOKEN}}
 
