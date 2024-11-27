@@ -1,6 +1,6 @@
 # Zig Code Flow
-![GitHub Release](https://img.shields.io/github/v/release/gaskam-com/zig-code-flow?display_name=tag&style=for-the-badge)
-![GitHub License](https://img.shields.io/github/license/gaskam-com/zig-code-flow?style=for-the-badge)
+![GitHub Release](https://img.shields.io/github/v/release/gaskam/zig-code-flow?display_name=tag&style=for-the-badge)
+![GitHub License](https://img.shields.io/github/license/gaskam/zig-code-flow?style=for-the-badge)
 
 A comprehensive VS Code extension providing Zig language support with powerful snippets to enhance your Zig development experience. As we all know, writing zig code can sometimes be tedious, as there are a lot of long common patterns. Who remembers how to properly create an allocator? This extension tries to cover your back by providing you with the most common patterns we experience while developing.
 
@@ -53,7 +53,7 @@ Learn more about available snippets in the sections below.
 5. Rate 5 stars!
 
 ### Manual Installation
-1. Download the latest release from the [GitHub repository](https://github.com/gaskam-com/zig-code-flow/releases)
+1. Download the latest release from the [GitHub repository](https://github.com/gaskam/zig-code-flow/releases)
 2. Open VS Code
 3. Go to Extensions (Ctrl+Shift+X)
 4. Click on the three dots in the top right corner
@@ -215,7 +215,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Author
 Coded with ❤️ by [Gaskam](https://gaskam.com)
 
-See other projects on our [GitHub](https://github.com/gaskam-com) page.
+See other projects on our [GitHub](https://github.com/gaskam) page.
 
 You can also visit our personal GitHub profiles:
 - [Kamil Leys](https://github.com/kamil-leys)

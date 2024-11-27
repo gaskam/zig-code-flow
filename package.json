@@ -11,14 +11,14 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gaskam-com/zig-code-flow"
+    "url": "https://github.com/gaskam/zig-code-flow"
   },
   "bugs": {
-    "url": "https://github.com/gaskam-com/zig-code-flow/issues"
+    "url": "https://github.com/gaskam/zig-code-flow/issues"
   },
   "author": {
     "name": "Gaskam",
-    "url": "https://github.com/gaskam-com"
+    "url": "https://github.com/gaskam"
   },
   "readme": "README.md",
   "categories": [

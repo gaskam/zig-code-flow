@@ -22,4 +22,4 @@ updates:
     rebase-strategy: "auto"
     reviewers:
       - "gaspard-lebaube"
-      - "gaskam-com/gaskam"
+      - "gaskam/gaskam"
