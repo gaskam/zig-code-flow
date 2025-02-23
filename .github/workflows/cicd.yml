@@ -204,7 +204,7 @@ jobs:
           fi
 
       - name: Publish to Visual Studio Marketplace
-        uses: HaaLeo/publish-vscode-extension@v1.6.2
+        uses: HaaLeo/publish-vscode-extension@v2.0.0
         with:
           pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
           registryUrl: https://marketplace.visualstudio.com
